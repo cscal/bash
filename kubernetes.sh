@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Set vars for IP and pod network CIDR
+MASTERIP=`hostname -I | cut --delimiter=' ' -f1`
+CIDR=10.244.0.0/16      # CHANGE THIS IF NEEDED
+
 # Ensure swap is disabled
 swapoff -a
 # use sed to find the swap line of /etc/fstab and comment it out
@@ -46,3 +50,16 @@ yum install -y kubeadm kubelet kubectl
 systemctl start docker && systemctl enable docker
 systemctl start kubelet && systemctl enable kubelet
 
+# Initialize kube and save token information.
+mkdir -p $HOME/.kube
+kubeadm init --apiserver-advertise-address=$MASTERIP --pod-network-cidr=$CIDR | grep kubeadm | cut -d ':' -f 2- >> $HOME/.kube/token
+
+# Do what kubeadm said to do.
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+# Apply flannel yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+# Done
+echo 'Script finished. Now run the worker script on the kubernetes workers.'
