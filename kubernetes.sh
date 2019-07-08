@@ -52,7 +52,7 @@ systemctl start kubelet && systemctl enable kubelet
 
 # Initialize kube and save token information.
 mkdir -p $HOME/.kube
-kubeadm init --apiserver-advertise-address=$MASTERIP --pod-network-cidr=$CIDR | grep kubeadm | cut -d ':' -f 2- >> $HOME/.kube/token
+kubeadm init --apiserver-advertise-address=$MASTERIP --pod-network-cidr=$CIDR >> $HOME/.kube/token
 
 # Do what kubeadm said to do.
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -63,3 +63,4 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 
 # Done
 echo 'Script finished. Now run the worker script on the kubernetes workers.'
+echo 'Token information saved at /root/.kube/token'
