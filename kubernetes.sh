@@ -2,7 +2,7 @@
 
 # Set vars for IP and pod network CIDR
 MASTERIP=`hostname -I | cut --delimiter=' ' -f1`
-CIDR=10.244.0.0/16      # CHANGE THIS IF NEEDED
+read -p "Enter network CIDR: " CIDR          # old example: 10.244.0.0/16
 
 # Ensure swap is disabled
 swapoff -a
